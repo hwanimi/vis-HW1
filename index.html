@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2018 by hwanimi (http://jsbin.com/fojubad/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <script src="https://code.jquery.com/jquery.min.js"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/bootswatch/4.0.0/cosmo/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <style> @import url("_index.css") </style>
+  <title>[1062 Visualization of Information] HW1 106753040 柳桓任</title>
+  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<h1 style="text-align: center; "class="central">臺北市各區粗出生率、死亡率、結婚率和離婚率 (106年)</h1>
+<h2 style="text-align: center;" class="lead"> <br>1062 Visualization of Information HW1 <br>106753040 柳桓任</h2>
+  </head>
+  
+
+  
+<body>
+  <div id="id_content">
+    <br><br>
+    <ul>
+       <li>
+    <h4> 出生率</h4>
+    <div class="barChart3"></div>
+    </p>
+    <li>
+    <h4> 死亡率</h4>
+    <div class="barChart2"></div>
+    </p>
+  <li>
+    <h4> 結婚率</h4>
+    <div class="barChart1"></div>
+    </p>
+  <li>
+    <h4> 離婚率</h4>
+    <div class="barChart"></div>
+    </p>
+
+  
+
+  
+   <svg width="960" height="100"></svg> 
+    
+   <script language="JavaScript" src="d3_taipeiBar.js">
+   </script>
+
+   <h3> &#160 資料來源：<a href="https://wshr.gov.taipei/News.aspx?n=994153D1C57CD6AA&sms=13169FFBFD97198B">臺北市文山區戶政事務所</a></h3>
+   <h3> &#160 說明</h3>
+     
+       <li> 動機：人口的增加表示當時的地區的特色和社會現象，本資料標題於臺北市各區粗出生率、死亡率、結婚率和離婚率，因此本資料可當台北市每個區的特徵比較。<br>
+       <li> 方法：html + d3.js + css<br>
+       <li> 留言：死亡率第一二名果然是萬華區和大同區，因為艋舺和大龍洞是個台北的老社區。不過在出生率兩地區都超過總計，發現地區的出生率跟死亡率之間關係不存在。結婚率最高的是信義區，不過出生率南港·內湖區比信義區高，出生率跟子女規劃比較有關係。<br>  
+ <br>
+         <br>
+</div> <!-- /id_content -->
+
+<script id="jsbin-javascript">
+
+  var divorce_rate = [
+    ['總計',2.5],
+    ["松山區",2.48],
+    ["信義區",2.56],
+    ["大安區", 1.8],
+    ["中山區", 2.29],
+    ["中正區", 2.21],
+    ["大同區", 2.49],
+    ["萬華區", 3.29],
+    ["文山區", 2.78],
+    ["南港區", 2.4],
+    ["內湖區", 2.69],
+    ["士林區", 2.52],
+    ["北投區", 2.42]];
+
+  var div_data_bind = d3.select(".barChart").selectAll("div").data(divorce_rate);
+  div_set = div_data_bind.enter().append("div");
+  div_data_bind.exit().remove();
+  div_set.text(function(d,i) {
+    return d[0]+d[1];
+  });
+  
+  div_set.style("height", "20px");
+  div_set.style("background", function(d,i){
+    if(d[1]<2.5) return "#F0DDFD";
+    if(d[1]>2.5) return "#DCAFFC";
+    return "#C272F9";
+  });
+
+  
+
+  div_set.style("margin", "5px");
+  div_set.style("width", function(d,i) {
+    return (d[1] * 100)+"px";
+  });
+
+  var marriage_rate = [
+    ["總計",6.01],
+    ["松山區", 5.16],
+    ["信義區", 6.67],
+    ["大安區", 5.39],
+    ["中山區", 6.69],
+    ["中正區", 4.94],
+    ["大同區", 6.23],
+    ["萬華區", 6.21],
+    ["文山區", 5.62],
+    ["南港區", 6.61],
+    ["內湖區", 6.44],
+    ["士林區", 6.22],
+    ["北投區", 6.05]];
+
+  var div_data_bind1 = d3.select(".barChart1").selectAll("div").data(marriage_rate);
+  div_set = div_data_bind1.enter().append("div");
+  div_data_bind.exit().remove();
+  div_set.text(function(d,i) {
+    return d[0]+d[1];
+  });
+  
+  div_set.style("height", "20px");
+  div_set.style("background", function(d,i){
+    if(d[1]<6.01) return "#FCDED7";
+    if(d[1]>6.01) return "#FFA997";
+    return "#FE7B5D";
+  });  
+
+  div_set.style("margin", "5px");
+  div_set.style("width", function(d,i) {
+    return (d[1] * 100)+"px";
+  });
+
+  var death_rate = [
+    ["總計",6.49],
+    ["松山區", 6.2],
+    ["信義區", 6.9],
+    ["大安區", 6.57],
+    ["中山區", 6.55],
+    ["中正區", 6.56],
+    ["大同區", 7.74],
+    ["萬華區", 8.53],
+    ["文山區", 5.92],
+    ["南港區", 5.86],
+    ["內湖區", 4.9],
+    ["士林區", 6.72],
+    ["北投區", 6.48]];
+
+  var div_data_bind2 = d3.select(".barChart2").selectAll("div").data(death_rate);
+  div_set = div_data_bind2.enter().append("div");
+  div_data_bind.exit().remove();
+  div_set.text(function(d,i) {
+    return d[0]+d[1];
+  });
+  
+  div_set.style("height", "20px");
+  div_set.style("background", function(d,i){
+    if(d[1]<6.49) return "#EFE9FD";
+    if(d[1]>6.49) return "#D7C7FE";
+    return "#B89BFE";
+  });  
+
+  div_set.style("margin", "5px");
+  div_set.style("width", function(d,i) {
+    return (d[1] * 100)+"px";
+  });
+
+  
+  var birth_rate = [
+    ["總計", 9.31],
+    ["松山區", 8.15],
+    ["信義區", 9.37],
+    ["大安區", 8.03],
+    ["中山區", 9.18],
+    ["中正區", 9.16],
+    ["大同區", 10.4],
+    ["萬華區", 9.8],
+    ["文山區", 9.19],
+    ["南港區", 10.65],
+    ["內湖區", 10.13],
+    ["士林區", 9.26],
+    ["北投區", 9.68]];
+
+  var div_data_bind3 = d3.select(".barChart3").selectAll("div").data(birth_rate);
+  div_set = div_data_bind3.enter().append("div");
+  div_data_bind.exit().remove();
+  div_set.text(function(d,i) {
+    return d[0]+d[1];
+  });
+  
+  div_set.style("height", "20px");
+  div_set.style("background", function(d,i){
+    if(d[1]<9.31) return "#FDE9F4";
+    if(d[1]>9.31) return "#FED4EA";
+    return "#FEB3DB";
+  });  
+
+  div_set.style("margin", "5px");
+  div_set.style("width", function(d,i) {
+    return (d[1] * 100)+"px";
+  });
+
+  
+
+  
+</script>
+</body>
+  
+</html>
+
