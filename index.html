@@ -1,10 +1,9 @@
+
 <!DOCTYPE html>
 <!--
 Created using JS Bin
 http://jsbin.com
-
 Copyright (c) 2018 by hwanimi (http://jsbin.com/fojubad/1/edit)
-
 Released under the MIT license: http://jsbin.mit-license.org
 -->
 <meta name="robots" content="noindex">
@@ -18,12 +17,12 @@ Released under the MIT license: http://jsbin.mit-license.org
   <title>[1062 Visualization of Information] HW1 106753040 柳桓任</title>
   <br><br>
 <h1 style="text-align: center; "class="central">臺北市各區粗出生率、死亡率、結婚率和離婚率 (106年)</h1>
-<h2 style="text-align: center;" class="lead"> <br>1062 Visualization of Information HW1 <br>106753040 柳桓任</h2>
+<h2 style="text-align: center;" class="lead"> <br>1062 Visualization of Information HW1 <br>106753040 柳桓任
+<br> Ver1(18.03.19): <a href="http://ghost.cs.nccu.edu.tw/~g10640/1062_Vis/Vis_HW1_ver1.html"> link</a></h2> 
   <style id="jsbin-css">
 html, body {
     height: 100%;
 }
-
 </style>
 </head>
   
@@ -31,183 +30,125 @@ html, body {
   
 <body>
   <div id="id_content">
-    <br><br><br><br>
-    <ul>
       <ul>
-       <li>
-    <h4> 出生率</h4>
-    <div class="barChart3"></div>
-    </p>
-    <br><li>
-    <h4> 死亡率</h4>
-    <div class="barChart2"></div>
-    </p>
-    <br><li>
-    <h4> 結婚率</h4>
-    <div class="barChart1"></div>
-    </p>
-    <br><li>
-    <h4> 離婚率</h4>
-    <div class="barChart"></div>
-    </p>
+            <svg width="1160" height="600"></svg>
+            <script src="https://d3js.org/d3.v4.min.js"></script>
+            <script>
+              var svg = d3.select("svg"),
+                margin = {top: 20, right: 20, bottom: 30, left: 40},
+                width = +svg.attr("width") - margin.left - margin.right,
+                height = +svg.attr("height") - margin.top - margin.bottom,
+                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            
+            var x0 = d3.scaleBand()
+                .rangeRound([0, width])
+                .paddingInner(0.1);
+            
+            var x1 = d3.scaleBand()
+                .padding(0.05);
+            
+            var y = d3.scaleLinear()
+                .rangeRound([height, 0]);
+            
+            var z = d3.scaleOrdinal()
+                .range([ "#FED4EA", "#D7C7FE", "#FFA997", "#DCAFFC"]);
+                
+            // d3.csv("data.csv", function(data){
+            //   console.log(data);
+            // });
+            
+            d3.csv("data.csv", function(d, i, columns) {
+            //   console.log(d)
+            //   console.log(i)
+            //   console.log(columns)
+                
+              for (var i = 1, n = columns.length; i < n; ++i) d[columns[i]] = +d[columns[i]];
+              return d;
+            }, function(error, data) {
+              if (error) throw error;
+              
+            
+              var keys = data.columns.slice(1);
+            
+              x0.domain(data.map(function(d) { return d.Region; }));
+              x1.domain(keys).rangeRound([0, x0.bandwidth()]);
+              y.domain([0, d3.max(data, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
+            
+              g.append("g")
+                .selectAll("g")
+                .data(data)
+                .enter().append("g")
+                  .attr("transform", function(d) { return "translate(" + x0(d.Region) + ",0)"; })
+                .selectAll("rect")
+                .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
+                .enter().append("rect")
+                  .attr("x", function(d) { return x1(d.key); })
+                  .attr("y", function(d) { return y(d.value); })
+                  .attr("width", x1.bandwidth())
+                  .attr("height", function(d) { return height - y(d.value); })
+                  .attr("fill", function(d) { return z(d.key); });
+            
+              g.append("g")
+                  .attr("class", "axis")
+                  .attr("transform", "translate(0," + height + ")")
+                  .call(d3.axisBottom(x0));
+            
+              g.append("g")
+                  .attr("class", "axis")
+                  .call(d3.axisLeft(y).ticks(null, "s"))
+                .append("text")
+                  .attr("x", 2)
+                  .attr("y", y(y.ticks().pop()) + 0.5)
+                  .attr("dy", "0.32em")
+                  .attr("fill", "#000")
+                  .attr("font-weight", "bold")
+                  .attr("text-anchor", "start")
+                  .text("per mil ‰ ");
+            
+              var legend = g.append("g")
+                  .attr("font-family", "sans-serif")
+                  .attr("font-size", 10)
+                  .attr("text-anchor", "end")
+                .selectAll("g")
+                .data(keys.slice().reverse())
+                .enter().append("g")
+                  .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+            
+              legend.append("rect")
+                  .attr("x", width - 19)
+                  .attr("width", 19)
+                  .attr("height", 19)
+                  .attr("fill", z);
+            
+              legend.append("text")
+                  .attr("x", width - 24)
+                  .attr("y", 9.5)
+                  .attr("dy", "0.32em")
+                  .text(function(d) { return d; });
+            });
+            
+            </script>
+      
+       <br><br>
+       <ul>
+            <h3> 資料來源：<a href="https://wshr.gov.taipei/News.aspx?n=994153D1C57CD6AA&sms=13169FFBFD97198B">臺北市文山區戶政事務所</a></h3>
+            <h3> 說明</h3>
+              
+                <li> 動機：人口的增加表示當時的地區的特色和社會現象，本資料標題於臺北市各區粗出生率、死亡率、結婚率和離婚率，因此本資料可當台北市每個區的特徵比較。<br>
+                <li> 方法：html + d3.js + css<br>
+                <li> 留言：死亡率第一二名果然是萬華區和大同區，因為艋舺和大龍洞是個台北的老社區。不過在出生率兩地區都超過總計，發現地區的出生率跟死亡率之間關係不存在。
+                    <br> 結婚率最高的是信義區，不過出生率南港·內湖區比信義區高，出生率跟子女規劃比較有關係。<br>  
+          <br>
+                  <br>
+         
+       </ul>         
+    
+      </ul>
+    </div>   
 
-  <h5> 此上面長條圖（千分率）</h5>
-   <br><br>
-   <h3> 資料來源：<a href="https://wshr.gov.taipei/News.aspx?n=994153D1C57CD6AA&sms=13169FFBFD97198B">臺北市文山區戶政事務所</a></h3>
-   <h3> 說明</h3>
-     
-       <li> 動機：人口的增加表示當時的地區的特色和社會現象，本資料標題於臺北市各區粗出生率、死亡率、結婚率和離婚率，因此本資料可當台北市每個區的特徵比較。<br>
-       <li> 方法：html + d3.js + css<br>
-       <li> 留言：死亡率第一二名果然是萬華區和大同區，因為艋舺和大龍洞是個台北的老社區。不過在出生率兩地區都超過總計，發現地區的出生率跟死亡率之間關係不存在。結婚率最高的是信義區，不過出生率南港·內湖區比信義區高，出生率跟子女規劃比較有關係。<br>  
- <br>
-         <br>
-</div> 
+        
 
-<script src="https://d3js.org/d3.v5.min.js"></script>
-<script>
-  var divorce_rate = [
-    ['總計',2.5],
-    ["松山區",2.48],
-    ["信義區",2.56],
-    ["大安區", 1.8],
-    ["中山區", 2.29],
-    ["中正區", 2.21],
-    ["大同區", 2.49],
-    ["萬華區", 3.29],
-    ["文山區", 2.78],
-    ["南港區", 2.4],
-    ["內湖區", 2.69],
-    ["士林區", 2.52],
-    ["北投區", 2.42]];
 
-  var div_data_bind = d3.select(".barChart").selectAll("div").data(divorce_rate);
-  div_set = div_data_bind.enter().append("div");
-  div_data_bind.exit().remove();
-  div_set.text(function(d,i) {
-    return d[0]+d[1];
-  });
-  
-  div_set.style("height", "20px");
-  div_set.style("background", function(d,i){
-    if(d[1]<2.5) return "#F0DDFD";
-    if(d[1]>2.5) return "#DCAFFC";
-    return "#C272F9";
-  });
-
-  
-
-  div_set.style("margin", "5px");
-  div_set.style("width", function(d,i) {
-    return (d[1] * 100)+"px";
-  });
-
-  var marriage_rate = [
-    ["總計",6.01],
-    ["松山區", 5.16],
-    ["信義區", 6.67],
-    ["大安區", 5.39],
-    ["中山區", 6.69],
-    ["中正區", 4.94],
-    ["大同區", 6.23],
-    ["萬華區", 6.21],
-    ["文山區", 5.62],
-    ["南港區", 6.61],
-    ["內湖區", 6.44],
-    ["士林區", 6.22],
-    ["北投區", 6.05]];
-
-  var div_data_bind1 = d3.select(".barChart1").selectAll("div").data(marriage_rate);
-  div_set = div_data_bind1.enter().append("div");
-  div_data_bind.exit().remove();
-  div_set.text(function(d,i) {
-    return d[0]+d[1];
-  });
-  
-  div_set.style("height", "20px");
-  div_set.style("background", function(d,i){
-    if(d[1]<6.01) return "#FCDED7";
-    if(d[1]>6.01) return "#FFA997";
-    return "#FE7B5D";
-  });  
-
-  div_set.style("margin", "5px");
-  div_set.style("width", function(d,i) {
-    return (d[1] * 100)+"px";
-  });
-
-  var death_rate = [
-    ["總計",6.49],
-    ["松山區", 6.2],
-    ["信義區", 6.9],
-    ["大安區", 6.57],
-    ["中山區", 6.55],
-    ["中正區", 6.56],
-    ["大同區", 7.74],
-    ["萬華區", 8.53],
-    ["文山區", 5.92],
-    ["南港區", 5.86],
-    ["內湖區", 4.9],
-    ["士林區", 6.72],
-    ["北投區", 6.48]];
-
-  var div_data_bind2 = d3.select(".barChart2").selectAll("div").data(death_rate);
-  div_set = div_data_bind2.enter().append("div");
-  div_data_bind.exit().remove();
-  div_set.text(function(d,i) {
-    return d[0]+d[1];
-  });
-  
-  div_set.style("height", "20px");
-  div_set.style("background", function(d,i){
-    if(d[1]<6.49) return "#EFE9FD";
-    if(d[1]>6.49) return "#D7C7FE";
-    return "#B89BFE";
-  });  
-
-  div_set.style("margin", "5px");
-  div_set.style("width", function(d,i) {
-    return (d[1] * 100)+"px";
-  });
-
-  
-  var birth_rate = [
-    ["總計", 9.31],
-    ["松山區", 8.15],
-    ["信義區", 9.37],
-    ["大安區", 8.03],
-    ["中山區", 9.18],
-    ["中正區", 9.16],
-    ["大同區", 10.4],
-    ["萬華區", 9.8],
-    ["文山區", 9.19],
-    ["南港區", 10.65],
-    ["內湖區", 10.13],
-    ["士林區", 9.26],
-    ["北投區", 9.68]];
-
-  var div_data_bind3 = d3.select(".barChart3").selectAll("div").data(birth_rate);
-  div_set = div_data_bind3.enter().append("div");
-  div_data_bind.exit().remove();
-  div_set.text(function(d,i) {
-    return d[0]+d[1];
-  });
-  
-  div_set.style("height", "20px");
-  div_set.style("background", function(d,i){
-    if(d[1]<9.31) return "#FDE9F4";
-    if(d[1]>9.31) return "#FED4EA";
-    return "#FEB3DB";
-  });  
-
-  div_set.style("margin", "5px");
-  div_set.style("width", function(d,i) {
-    return (d[1] * 100)+"px";
-  });
-
-  
-
-  
-</script>
 </body>
   
 </html>
